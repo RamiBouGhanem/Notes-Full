@@ -112,14 +112,15 @@ app.put("/update-note-pinned/:noteId", authenticateToken, async (req, res) => {
   const noteId = parseInt(req.params.noteId);
   const { isPinned } = req.body;
 
-  const note = await prisma.note.updateMany({
+  const note = await prisma.note.update({
     where: { id: noteId, userId: req.user.userId },
     data: { isPinned },
   });
 
-  if (!note.count) return res.status(404).json({ error: true, message: "Note not found" });
-  res.json({ error: false, message: "Pinned status updated successfully" });
+  if (!note) return res.status(404).json({ error: true, message: "Note not found" });
+  res.json({ error: false, message: "Pinned status updated successfully", note });
 });
+
 
 //search note
 // Add search notes endpoint

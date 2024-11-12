@@ -9,6 +9,8 @@ import { useNavigate } from 'react-router-dom'
 import axiosInstance from '../../utils/axiosInstance';
 import Toast from '../../components/ToastMessage/Toast'
 import EmptyCard from '../../components/EmptyCard/EmptyCard'
+import addNotesImg from "../../assets/images/add-notes.svg"
+import NoDataImg from '../../assets/images/no-data.png'
 
 const Home = () => {
   const [openAddEditModal, setOpenAddEditModal] = useState({
@@ -21,7 +23,11 @@ const Home = () => {
 
   const [allNotes, setAllNotes] = useState([]);
   const [userInfo, setUserInfo] = useState(null);
+
+  const [isSearch,setIsSearch]=useState(false);
+
   const navigate = useNavigate();
+
 
   const handleEdit = (noteDetails) => {
     setOpenAddEditModal({ isShown: true, type: "edit", data: noteDetails });
@@ -113,7 +119,73 @@ const Home = () => {
     }
   };
   
+  const onSearchNote = async (q) => {
+    if (!q) {
+      console.error("Query parameter is required.");
+      return;
+    }
+    try {
+      const token = localStorage.getItem("Token");
+      const response = await axiosInstance.get("/search-notes", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { q },
+      });
+      if (response.data && response.data.notes) {
+        setIsSearch(true);
+        setAllNotes(response.data.notes);
+      }
+    } catch (error) {
+      console.log("An unexpected error has occurred. Please try again later.");
+      console.error(error); // Log the error for more details
+    }
+  };
+  
+  const handleClearSearch = () => {
+    setIsSearch(false);
+    getAllNotes();
+  };
 
+  const updateIsPinned = async (noteData) => {
+    const noteId = noteData.id;
+  
+    try {
+      const token = localStorage.getItem("Token");
+  
+      if (!token) {
+        console.error("No auth token found. Please log in.");
+        return;
+      }
+  
+      const response = await axiosInstance.put(
+        "/update-note-pinned/" + noteId,
+        {
+          isPinned: !noteData.isPinned, // Toggle the pinned status
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (response.data && response.data.note) {
+        // Toggle the pinned status and update UI
+        const newPinnedStatus = !noteData.isPinned;
+        showToastMessage(
+          newPinnedStatus ? "Note pinned successfully" : "Note unpinned successfully",
+          "update"
+        );
+        getAllNotes(); // Update the list of notes after the change
+      } else {
+        console.error("Failed to update pinned status", response.data);
+      }
+    } catch (error) {
+      console.error("An unexpected error has occurred. Please try again later.");
+      console.error(error);
+    }
+  };
+  
+  
 
 
 
@@ -125,7 +197,7 @@ const Home = () => {
 
   return (
     <>
-      <Navbar userInfo={userInfo} />
+      <Navbar userInfo={userInfo} onSearchNote={onSearchNote} handleClearSearch={handleClearSearch}/>
       <div className='container mx-auto'>
         <div className='grid grid-cols-3 gap-4 mt-8'>
 
@@ -147,9 +219,9 @@ const Home = () => {
             </div>
           ) : (
             <EmptyCard
-              imgSrc={isSearch ? NoDataImg : addNotesImg}
-              message={isSearch ? `Oops no notes found matching your search.` : `Start creating your first note! Click the 'add' button to jot down your thoughts, ideas, and reminders.`}
-            />
+            imgSrc={isSearch ? NoDataImg : addNotesImg}
+            message={isSearch ? `Oops no notes found matching your search.` : `Start creating your first note! Click the 'add' button to jot down your thoughts, ideas, and reminders.`}
+          />
           )}
 
         </div>

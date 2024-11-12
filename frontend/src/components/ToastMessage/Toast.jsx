@@ -13,12 +13,22 @@ const Toast = ({ isShown, message, type, onClose }) => {
   }, [isShown, onClose]);
 
   return (
-    <div className={`absolute top-20 right-6 transition-all duration-400 ${isShown ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
+    <div
+      className={`absolute top-20 right-6 transition-all duration-400 ${
+        isShown ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+      }`}
+    >
       <div className="min-w-52 bg-white border shadow-2xl rounded-md relative overflow-hidden">
-        <div className={`absolute top-0 left-0 w-1 h-full ${type === "delete" ? "bg-red-500" : "bg-green-500"}`}></div>
+        <div
+          className={`absolute top-0 left-0 w-1 h-full ${type === "delete" ? "bg-red-500" : "bg-green-500"}`}
+        ></div>
         <div className="flex items-center gap-3 py-2 px-4">
-          <div className={`w-10 h-10 flex items-center justify-center rounded-full ${type === "delete" ? "bg-red-50" : "bg-green-50"}`}>
-            {type === 'delete' ? (
+          <div
+            className={`w-10 h-10 flex items-center justify-center rounded-full ${
+              type === "delete" ? "bg-red-50" : "bg-green-50"
+            }`}
+          >
+            {type === "delete" ? (
               <MdDeleteOutline className="text-xl text-red-500" />
             ) : (
               <LuCheck className="text-xl text-green-500" />
@@ -30,5 +40,6 @@ const Toast = ({ isShown, message, type, onClose }) => {
     </div>
   );
 };
+
 
 export default Toast;
