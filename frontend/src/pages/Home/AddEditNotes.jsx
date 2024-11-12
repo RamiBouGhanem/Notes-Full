@@ -1,16 +1,96 @@
 import React, { useState } from 'react';
 import TagInput from '../../components/Input/TagInput';
 import { MdClose } from 'react-icons/md';
+import axiosInstance from '../../utils/axiosInstance';
 
-const AddEditNotes = ({ noteData, type, onClose }) => {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [tags, setTags] = useState([]);
+const AddEditNotes = ({ noteData, type, onClose, getAllNotes,showToastMessage }) => {
+  const [title, setTitle] = useState(noteData?.title || " ");
+  const [content, setContent] = useState(noteData?.content || " ");
+  const [tags, setTags] = useState(noteData?.tags || [ ]);
   const [error, setError] = useState(null);
 
   //add Note
-  const addNewNote = async () => {};
-  const editNewNote = async() => {};
+  const addNewNote = async () => {
+    try {
+      const token = localStorage.getItem("Token"); // Get the token from localStorage
+      
+      if (!token) {
+        return; // Prevent sending request if token is not available
+      }
+  
+      const response = await axiosInstance.post(
+        "/add-note", 
+        {
+          title,
+          content,
+          tags,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add token to Authorization header
+          },
+        }
+      );
+      
+      if (response.data && response.data.note) {
+        showToastMessage("note added successfully");
+        getAllNotes();  // Refresh the list of notes
+        onClose();  // Close the modal
+      }
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        setError(error.response.data.message);
+      } else {
+        console.error("An unexpected error occurred:", error);
+      }
+    }
+  };
+  
+
+  const editNewNote = async () => { 
+    const noteId = noteData.id
+    try {
+      const token = localStorage.getItem("Token"); // Get the token from localStorage
+      
+      if (!token) {
+        return; // Prevent sending request if token is not available
+      }
+  
+      const response = await axiosInstance.put(
+        "/edit-note/ "+ noteId, 
+        {
+          title,
+          content,
+          tags,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add token to Authorization header
+          },
+        }
+      );
+      
+      if (response.data && response.data.note) {
+        showToastMessage("note updated successfully");
+        getAllNotes();  // Refresh the list of notes
+        onClose();  // Close the modal
+      }
+    } catch (error) {
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        setError(error.response.data.message);
+      } else {
+        console.error("An unexpected error occurred:", error);
+      }
+    }
+  };
 
   const handleAddNote = () => {
     if (!title) {
@@ -22,11 +102,11 @@ const AddEditNotes = ({ noteData, type, onClose }) => {
       return;
     }
     setError(null); // Clear the error message when all fields are filled
-    if(type ==="edit"){
-        editNewNote()
+    if (type === "edit") {
+      editNewNote()
     }
-    else{
-        addNewNote()
+    else {
+      addNewNote()
     }
   };
 
@@ -68,7 +148,7 @@ const AddEditNotes = ({ noteData, type, onClose }) => {
         className='btn-primary font-medium mt-5 p-3'
         onClick={handleAddNote}
       >
-        ADD
+        {type === 'edit' ? 'Update': "ADD"}
       </button>
     </div>
   );
