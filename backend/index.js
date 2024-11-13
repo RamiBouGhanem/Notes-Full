@@ -3,6 +3,7 @@ const express = require("express");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const { PrismaClient } = require("@prisma/client");
+const bcrypt = require("bcrypt");
 
 const prisma = new PrismaClient();
 const app = express();
@@ -28,6 +29,8 @@ const authenticateToken = (req, res, next) => {
 app.get("/", (req, res) => res.json({ data: "hello" }));
 
 // Create Account
+
+// Create Account
 app.post("/create-account", async (req, res) => {
   const { fullName, email, password } = req.body;
   if (!fullName || !email || !password) return res.status(400).json({ error: true, message: "All fields are required" });
@@ -35,7 +38,9 @@ app.post("/create-account", async (req, res) => {
   const existingUser = await prisma.user.findUnique({ where: { email } });
   if (existingUser) return res.status(400).json({ error: true, message: "User already exists" });
 
-  const user = await prisma.user.create({ data: { fullName, email, password } });
+  // Hash the password before saving
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const user = await prisma.user.create({ data: { fullName, email, password: hashedPassword } });
   const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "36000m" });
 
   res.json({ error: false, message: "User registered successfully", accessToken, user });
@@ -47,11 +52,16 @@ app.post("/login", async (req, res) => {
   if (!email || !password) return res.status(400).json({ error: true, message: "Email and password are required" });
 
   const user = await prisma.user.findUnique({ where: { email } });
-  if (!user || user.password !== password) return res.status(400).json({ error: true, message: "Invalid credentials" });
+  if (!user) return res.status(400).json({ error: true, message: "Invalid credentials" });
+
+  // Verify the hashed password
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) return res.status(400).json({ error: true, message: "Invalid credentials" });
 
   const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "36000m" });
   res.json({ error: false, message: "User logged in successfully", accessToken });
 });
+
 
 // Get User
 app.get("/get-user", authenticateToken, async (req, res) => {

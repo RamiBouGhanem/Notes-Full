@@ -12,7 +12,7 @@ const axiosInstance = axios.create({
         (config)=>{
                 const accessToken = localStorage.getItem("token");
                 if(accessToken) {
-                    config.header.Auothorization = `bearer ${accessToken}`;
+                    config.headers.Authorization = `bearer ${accessToken}`;
         }
         return config;
     },
