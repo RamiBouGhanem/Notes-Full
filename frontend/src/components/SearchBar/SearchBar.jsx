@@ -1,27 +1,31 @@
-import React from 'react'
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { IoMdClose } from 'react-icons/io';
 
-
-const SearchBar = ({value, onChange, handleSearch, onClearSearch}) => {
-
+const SearchBar = ({ value, onChange, handleSearch, onClearSearch }) => {
   return (
-    <div className='w-80 flex items-center px-4 bg-slate-100 rounded-md '>
-        <input 
-          type="text" 
-          value={value} 
-          onChange={onChange} 
-          placeholder="Search Notes" 
-          className='w-full text-xs bg-transparent py-[11px] outline-none'
+    <div className='flex items-center bg-transparent border-2 border-gray-500 rounded-lg px-3 py-1'>
+      <input
+        type="text"
+        value={value}
+        onChange={onChange}
+        placeholder="Search..."
+        className='w- bn bg-transparent text-sm text-gray-100 py-2 outline-none placeholder-gray-400'
+      />
+      {value && (
+        <IoMdClose
+          className='text-gray-300 text-lg cursor-pointer mx-2 hover:text-white'
+          onClick={onClearSearch}
         />
-        {value && (
-            <IoMdClose className='text-xl text-slate-500 curor-pointer hover:text-black mr-2' onClick={onClearSearch} />
-        )}
-        <FontAwesomeIcon icon={faMagnifyingGlass} className="text-slate-400 cursor-pointer hover:text-black" onClick={handleSearch}/>
-        
+      )}
+      <FontAwesomeIcon
+        icon={faMagnifyingGlass}
+        className="text-gray-300 cursor-pointer hovwdftyer:text-white"
+        onClick={handleSearch}
+      />
     </div>
-  )
-}
+  );
+};
 
-export default SearchBar
+export default SearchBar;

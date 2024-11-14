@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import Navbar from '../../components/Navbar/Navbar';
-import PasswordInput from '../../components/Input/PasswordInput';
 import { Link, useNavigate } from 'react-router-dom';
+import PasswordInput from '../../components/Input/PasswordInput';
 import { validateEmail } from '../../utils/helper';
 import axiosInstance from '../../utils/axiosInstance';
 
@@ -62,46 +61,63 @@ const SignUp = () => {
   };
 
   return (
-    <>
-      
-      <div className='flex items-center justify-center h-screen'>
-        <div className='w-96 border rounded bg-white px-7 py-10'>
-          <form onSubmit={handleSignUp}>
-            <h4 className='text-2xl mb-7'>SignUp</h4>
-            <input 
-              type="text" 
-              placeholder='Name' 
-              className='input-box' 
-              value={name} 
-              onChange={(e) => setName(e.target.value)} 
+    <div className='bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700 flex items-center justify-center min-h-screen'>
+      <div className='w-full max-w-md bg-gray-800 p-8 rounded-xl shadow-2xl'>
+        <h2 className='text-3xl font-semibold text-center text-white mb-8'>Sign Up</h2>
+        <form onSubmit={handleSignUp} className='space-y-6'>
+          <div>
+            <label htmlFor='name' className='block text-sm font-medium text-gray-200'>Name</label>
+            <input
+              type='text'
+              id='name'
+              placeholder='Enter your name'
+              className='w-full p-3 mt-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100 bg-gray-700'
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
-            <input 
-              type="text" 
-              placeholder='Email' 
-              className='input-box' 
-              value={email} 
-              onChange={(e) => setEmail(e.target.value)} 
-            />
-            <PasswordInput 
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-            />
-            {error && <p className='text-red-500 text-xs pb-1'>{error}</p>}
+          </div>
 
-            <button type='submit' className='btn-primary'>
-              Create Account
-            </button>
+          <div>
+            <label htmlFor='email' className='block text-sm font-medium text-gray-200'>Email</label>
+            <input
+              type='text'
+              id='email'
+              placeholder='Enter your email'
+              className='w-full p-3 mt-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-100 bg-gray-700'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
 
-            <p className='text-sm text-center mt-4'>
-              Already have an account?{" "}
-              <Link to="/login" className='font-medium text-primary underline'>
+          <div>
+            <label htmlFor='password' className='block text-sm font-medium text-gray-200'>Password</label>
+            <PasswordInput
+              id='password'
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          {error && <p className='text-red-500 text-xs'>{error}</p>}
+
+          <button
+            type='submit'
+            className='w-full py-3 mt-6 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500'
+          >
+            Create Account
+          </button>
+
+          <div className='text-center text-sm mt-4'>
+            <p className='text-gray-200'>
+              Already have an account?{' '}
+              <Link to='/login' className='font-medium text-blue-400 hover:underline'>
                 Login
               </Link>
             </p>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
-    </>
+    </div>
   );
 };
 

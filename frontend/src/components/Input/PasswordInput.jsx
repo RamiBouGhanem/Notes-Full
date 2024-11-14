@@ -1,32 +1,34 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { FaRegEye, FaRegEyeSlash } from 'react-icons/fa';
 
+function PasswordInput({ value, onChange, placeholder }) {
+  const [isShowPassword, setIsShowPassword] = useState(false);
+  const toggleShowPassword = () => setIsShowPassword(!isShowPassword);
 
-function PasswordInput({value, onChange, placeholder}) {
-    const [isShowPassword, setIsShowPassword] = useState(false)
-    const toggleShowPassword = ()=>{
-        setIsShowPassword(!isShowPassword)
-    }
   return (
-    <div className='flex items-center bg-transparent border-[1.5px] px-5 rounded mb-3'>
-        <input value={value}
+    <div className='flex items-center bg-gray-200 border-2 border-gray-300 px-4 rounded-lg mb-4 shadow-lg'>
+      <input
+        value={value}
         onChange={onChange}
-        type={isShowPassword? 'text' : 'password'}
-        placeholder={placeholder || "password"}
-        className='w-full txt-sm bg-transparent py-3 mr-3 rounded outline-none'
+        type={isShowPassword ? 'text' : 'password'}
+        placeholder={placeholder || "Enter your password"}
+        className='w-full text-sm bg-gray-200 py-3 px-2 mr-2 rounded-lg outline-none focus:bg-white transition-colors'
+      />
+      {isShowPassword ? (
+        <FaRegEye
+          size={20}
+          className="text-gray-600 cursor-pointer hover:text-blue-500 transition-colors"
+          onClick={toggleShowPassword}
         />
-        {isShowPassword ? <FaRegEye
-        size={22}
-        className="text-primary cursor-pointer "
-        onClick={() => toggleShowPassword()}
-        />: <FaRegEyeSlash 
-        size={22}
-        className='text-slate-400 cursor-pointer'
-        onClick={()=>toggleShowPassword()}
+      ) : (
+        <FaRegEyeSlash
+          size={20}
+          className='text-gray-600 cursor-pointer hover:text-blue-500 transition-colors'
+          onClick={toggleShowPassword}
         />
-}
+      )}
     </div>
-  )
+  );
 }
 
-export default PasswordInput
+export default PasswordInput;
